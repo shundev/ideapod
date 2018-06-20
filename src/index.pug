@@ -1,0 +1,29 @@
+- const year = (new Date()).getFullYear()
+- const title = "Idepod"
+
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        title #{title}
+        meta(name="description" content="")
+        meta(name="author" content="")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css")
+
+    body
+        .container
+            .row#section-name
+                header
+                    h1.center-align #{title}
+        
+            .row#section-timeline
+                #visualization
+
+        footer
+            .container
+                .footer-copyright
+                    p.center-align &copy; 2015-#{year} #{title} All rights reserved.
+
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js")
+        script(src="index.js")
