@@ -1,89 +1,44 @@
 import * as PIXI from 'pixi.js/dist/pixi.min.js'
 import * as d3 from 'd3/dist/d3.min.js'
+import * as _ from 'underscore/underscore-min.js'
 import * as graph from './miserables.json'
 
 export class Main {
     constructor () {
-        let width = 960, height = 600;
+        const visualization = document.getElementById("visualization")
 
-        let stage = new PIXI.Container();
-        let renderer = PIXI.autoDetectRenderer(width, height,
-            {antialias: !0, transparent: !0, resolution: 1});
+        const padding = 100
+        const width = visualization.clientWidth
+        const height = width
 
-        document.body.appendChild(renderer.view);
+        const g = d3.select("#visualization").append("svg:svg")
+            .attr('width', width)
+            .attr('height', height)
 
-        let colour = (function() {
-            let scale = d3.scaleOrdinal(d3.schemeSet3);
-            return (num) => parseInt(scale(num).slice(1), 16);
-        })()
+        const xScale = d3.scaleLinear().domain([10, -10]).range([width - padding, padding])
+        const yScale = d3.scaleLinear().domain([-10, 10]).range([height - padding, padding])
 
-        let simulation = d3.forceSimulation()
-            .force('link', d3.forceLink().id((d) => d.id))
-            .force('charge', d3.forceManyBody())
-            .force('center', d3.forceCenter(width / 2, height / 2));
+        const xAxis = d3.axisTop(xScale).tickValues(_.range(10, -11).filter(d => d%2===0))
+        const yAxis = d3.axisLeft(yScale).tickValues(_.range(-10, 11).filter(d => d%2===0))
 
-        let links = new PIXI.Graphics()
-        stage.addChild(links)
+        // --
+        const xAxisPlot = g.append('g')
+            .attr("class", "axis axis--x")
+            .attr('transform', `translate(0, ${height/2})`)
+            .call(xAxis)
 
-        graph.nodes.forEach((node) => {
-            node.gfx = new PIXI.Graphics()
-            node.gfx.lineStyle(1.5, 0xFFFFFF)
-            node.gfx.beginFill(colour(node.group))
-            node.gfx.drawCircle(0, 0, 5)
-            stage.addChild(node.gfx)
-        })
+        // |
+        const yAxisPlot = g.append('g')
+            .attr("class", "axis axis--y")
+            .attr('transform', `translate(${width/2}, 0)`)
+            .call(yAxis)
 
-        d3.select(renderer.view)
-            .call(d3.drag()
-                .container(renderer.view)
-                .subject(() => simulation.find(d3.event.x, d3.event.y))
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended))
+        xAxisPlot.selectAll(".tick line")
+    		.attr("y1", (width - (2*padding))/2 * -1)
+    		.attr("y2", (width - (2*padding))/2 * 1);
 
-        simulation
-            .nodes(graph.nodes)
-            .on('tick', ticked)
-
-        simulation.force('link')
-              .links(graph.links)
-
-        function ticked() {
-            graph.nodes.forEach((node) => {
-                let { x, y, gfx } = node;
-                gfx.position = new PIXI.Point(x, y)
-            })
-
-            links.clear();
-            links.alpha = 0.6;
-
-            graph.links.forEach((link) => {
-                let { source, target } = link;
-                links.lineStyle(Math.sqrt(link.value), 0x999999);
-                links.moveTo(source.x, source.y)
-                links.lineTo(target.x, target.y)
-            })
-
-            links.endFill()
-
-            renderer.render(stage)
-        }
-
-        function dragstarted() {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d3.event.subject.fx = d3.event.subject.x;
-            d3.event.subject.fy = d3.event.subject.y;
-        }
-
-        function dragged() {
-            d3.event.subject.fx = d3.event.x;
-            d3.event.subject.fy = d3.event.y;
-        }
-
-        function dragended() {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d3.event.subject.fx = null;
-            d3.event.subject.fy = null;
-        }
+    	yAxisPlot.selectAll(".tick line")
+    		.attr("x1", (width - (2*padding))/2 * -1)
+    		.attr("x2", (width - (2*padding))/2 * 1);
     }
 }
