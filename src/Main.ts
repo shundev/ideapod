@@ -13,7 +13,6 @@ export class Main {
         document.body.appendChild(renderer.view);
 
         let colour = (function() {
-            console.log(d3.schemeCategory20)
             let scale = d3.scaleOrdinal(d3.schemeSet3);
             return (num) => parseInt(scale(num).slice(1), 16);
         })()
@@ -50,7 +49,6 @@ export class Main {
               .links(graph.links)
 
         function ticked() {
-            console.log("Main#ticked")
             graph.nodes.forEach((node) => {
                 let { x, y, gfx } = node;
                 gfx.position = new PIXI.Point(x, y)
