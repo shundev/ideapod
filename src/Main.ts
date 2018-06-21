@@ -8,13 +8,10 @@ export class Main {
     readonly padding = 100
     width = 0
     height = 0
-    readonly domainX = [50, -50]
-    readonly domainY = [-50, 50]
 
     constructor () {
         this.initSvg()
-        this.drawCoordinates()
-        this.drawCircle()
+        this.drawGraph()
     }
 
     initSvg () {
@@ -28,40 +25,77 @@ export class Main {
             .attr('height', this.height)
     }
 
-    drawCoordinates() {
-        const xScale = d3.scaleLinear().domain(this.domainX).range([this.width - this.padding, this.padding])
-        const yScale = d3.scaleLinear().domain(this.domainY).range([this.height - this.padding, this.padding])
+    drawGraph() {
+        const colour = (function() {
+            let scale = d3.scaleOrdinal(d3.schemeSet3);
+            return (num) => parseInt(scale(num).slice(1), 16);
+        })()
 
-        const stepX = Math.abs(this.domainX[0] - this.domainX[1]) / 10
-        const stepY = Math.abs(this.domainY[0] - this.domainY[1]) / 10
-        const xAxis = d3.axisTop(xScale).tickValues(_.range(this.domainX[0], (this.domainX[1] < this.domainX[0]) ? this.domainX[1]-1 : this.domainX[1]+1).filter(d => d%stepX===0))
-        const yAxis = d3.axisLeft(yScale).tickValues(_.range(this.domainY[0], (this.domainY[1] < this.domainY[0]) ? this.domainY[1]-1 : this.domainY[1]+1).filter(d => d%stepY===0))
+        graph = {
+          "nodes": [
+            {"group": 1, "name": "Hannah Arendt", "x": 100, "y": 100, "img": "https://upload.wikimedia.org/wikipedia/commons/6/62/Hannah_arendt-150x150.jpg"},
+            {"group": 2, "name": "Michel Foucault", "x": 500, "y": 100, "img": "https://upload.wikimedia.org/wikipedia/en/5/52/Foucault5.jpg"},
+            {"group": 3, "name": "Alfred North Whitehead", "x": 300, "y": 500, "img": "https://upload.wikimedia.org/wikipedia/en/4/4e/Alfred_North_Whitehead.jpg"},
+          ],
+          "links": [
+            {"source": 0, "target": 1, "value": 1},
+            {"source": 1, "target": 2, "value": 2},
+            {"source": 2, "target": 0, "value": 3},
+          ]
+        }
 
-        // --
-        const xAxisPlot = this.svg.append('g')
-            .attr("class", "axis axis--x")
-            .attr('transform', `translate(0, ${this.height/2})`)
-            .call(xAxis)
 
-        // |
-        const yAxisPlot = this.svg.append('g')
-            .attr("class", "axis axis--y")
-            .attr('transform', `translate(${this.width/2}, 0)`)
-            .call(yAxis)
+        const links = this.svg.append("g").attr("class", "links").selectAll("links")
+        graph.links.forEach(l => {
+            let src = graph.nodes[l.source]
+            let tgt = graph.nodes[l.target]
+            links.data([l])
+                .enter()
+                .append("line")
+                .attr("class", "link")
+                .attr("x1", src.x)
+                .attr("y1", src.y)
+                .attr("x2", tgt.x)
+                .attr("y2", tgt.y)
+                .style("stroke", "black")
+        })
 
-        xAxisPlot.selectAll(".tick line")
-            .attr("y1", (this.width - (2*this.padding))/2 * -1)
-            .attr("y2", (this.width - (2*this.padding))/2 * 1);
+        const nodes = this.svg.append("g").attr("class", "nodes").selectAll("nodes")
+            .data(graph.nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+        nodes
+            .append("circle")
+            .attr("class", "node")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", 60)
+            .attr("fill", "white")
+            .style("stroke", "black")
 
-        yAxisPlot.selectAll(".tick line")
-            .attr("x1", (this.width - (2*this.padding))/2 * -1)
-            .attr("x2", (this.width - (2*this.padding))/2 * 1);
-    }
+        nodes
+            .append("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y - 70)
+            .attr("stroke", "black")
+            .attr("text-anchor", "middle")
+            .text(d => d.name)
 
-    drawCircle() {
-        this.svg.append("circle")
-            .attr("cx", this.width/2)
-            .attr("cy", this.height/2)
-            .attr("r", 10)
+        nodes.append("clipPath")
+            .attr("id", (d, i) => `clipCircle${i}`)
+            .append("circle")
+            .attr("r", 50)
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+
+        nodes
+            .append("svg:image")
+            .attr("x", d => d.x - 50)
+            .attr("y", d => d.y - 50)
+            .attr("width", d => 120)
+            .attr("height", d => 120)
+            .attr("xlink:href", d => d.img)
+            .attr("clip-path", (d, i) => `url(#clipCircle${i})`)
     }
 }
