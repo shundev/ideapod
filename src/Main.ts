@@ -72,10 +72,10 @@ export class Main {
             .attr("xlink:href", d => d.url)
             .append("g")
             .attr("class", "node")
+            .style("transform-origin", d => `${d.x}px ${d.y}px`)
 
         nodes
             .append("circle")
-            .attr("class", "node")
             .attr("cx", d => d.x)
             .attr("cy", d => d.y)
             .attr("r", this.nodeRadius)
