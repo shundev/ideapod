@@ -8,12 +8,13 @@ export class Main {
     readonly padding = 100
     width = 0
     height = 0
-    readonly domainX = [500, -500]
+    readonly domainX = [50, -50]
     readonly domainY = [-50, 50]
 
     constructor () {
         this.initSvg()
         this.drawCoordinates()
+        this.drawCircle()
     }
 
     initSvg () {
@@ -58,6 +59,9 @@ export class Main {
     }
 
     drawCircle() {
-
+        this.svg.append("circle")
+            .attr("cx", this.width/2)
+            .attr("cy", this.height/2)
+            .attr("r", 10)
     }
 }
