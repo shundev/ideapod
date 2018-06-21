@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    {
+        "group": 1,
+        "name": "Hannah Arendt",
+        "x": 333, "y": 200,
+        "img": "https://upload.wikimedia.org/wikipedia/commons/6/62/Hannah_arendt-150x150.jpg",
+        "url": "https://en.wikipedia.org/wiki/Hannah_Arendt"
+    },
+    {
+        "group": 2,
+        "name": "Michel Foucault",
+        "x": 666, "y": 200,
+        "img": "https://upload.wikimedia.org/wikipedia/en/5/52/Foucault5.jpg",
+        "url": "https://en.wikipedia.org/wiki/Michel_Foucault"
+    },
+    {
+        "group": 3,
+        "name": "Alfred North Whitehead",
+        "x": 500, "y": 800,
+        "img": "https://upload.wikimedia.org/wikipedia/en/4/4e/Alfred_North_Whitehead.jpg",
+        "url": "https://en.wikipedia.org/wiki/Alfred_North_Whitehead"
+    },
+  ],
+  "links": [
+    {"source": 0, "target": 1, "value": 1},
+    {"source": 1, "target": 2, "value": 2},
+    {"source": 2, "target": 0, "value": 3},
+  ]
+}

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "parcel src/index.pug",
     "build": "parcel build src/index.pug",
-    "clean": "rm -rf dist/*"
+    "clean": "rm -rf dist/*",
+    "rm-cache": "rm -rf .cache/"
   },
   "dependencies": {
     "d3": "^5.5.0",
